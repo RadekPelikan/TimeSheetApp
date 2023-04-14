@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@styles/styles.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.timesheetapp.MainController">
+   <children>
+      <HBox prefHeight="400.0" prefWidth="600.0" spacing="40.0">
+         <children>
+            <VBox prefHeight="345.0" prefWidth="407.0">
+               <children>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Button mnemonicParsing="false" prefHeight="118.0" prefWidth="142.0" styleClass="cal-backward" text="&lt;" />
+                           </children>
+                        </VBox>
+                        <VBox layoutX="38.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label alignment="CENTER" prefHeight="71.0" prefWidth="117.0" styleClass="cal-month" text="Label" VBox.vgrow="ALWAYS" />
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" layoutX="38.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Button mnemonicParsing="false" prefHeight="102.0" prefWidth="148.0" styleClass="cal-forward" text="&gt;" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+                  <GridPane fx:id="gridPane" prefHeight="355.0" prefWidth="356.0" style="-fx-border-color: black;">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label alignment="CENTER" prefHeight="72.0" prefWidth="115.0" styleClass="cal-header" text="Mon" />
+                        <Label alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="72.0" prefWidth="115.0" styleClass="cal-header" text="Tue" GridPane.columnIndex="1" />
+                        <Label alignment="CENTER" layoutX="70.0" layoutY="10.0" prefHeight="72.0" prefWidth="115.0" styleClass="cal-header" text="Wed" GridPane.columnIndex="2" />
+                        <Label alignment="CENTER" layoutX="131.0" layoutY="10.0" prefHeight="72.0" prefWidth="115.0" styleClass="cal-header" text="Thr" GridPane.columnIndex="3" />
+                        <Label alignment="CENTER" layoutX="192.0" layoutY="10.0" prefHeight="72.0" prefWidth="115.0" styleClass="cal-header" text="Fri" GridPane.columnIndex="4" />
+                        <Label alignment="CENTER" layoutX="253.0" layoutY="10.0" prefHeight="72.0" prefWidth="115.0" styleClass="cal-header" text="Sat" GridPane.columnIndex="5" />
+                        <Label alignment="CENTER" layoutX="314.0" layoutY="10.0" prefHeight="72.0" prefWidth="115.0" styleClass="cal-header" text="Sun" GridPane.columnIndex="6" />
+                     </children>
+                  </GridPane>
+               </children>
+            </VBox>
+            <VBox prefHeight="345.0" prefWidth="247.0" style="-fx-border-color: black;">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </HBox>
+   </children>
+</AnchorPane>

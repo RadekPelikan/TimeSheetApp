@@ -1,5 +1,30 @@
-.header {
+.cal-header {
     -fx-background-color: red;
     -fx-text-fill: white;
     -fx-font-weight: bold;
+}
+
+.cal-item {
+    -fx-border-color: black;
+}
+
+.cal-item:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+}
+
+.cal-month {
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+}
+
+.cal-forward, .cal-backward {
+    -fx-background-color: transparent;
+    -fx-background-radius: 5px;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.cal-forward:hover, .cal-backward:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+    -fx-font-size: 25px;
 }
