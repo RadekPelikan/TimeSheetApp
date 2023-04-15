@@ -163,6 +163,11 @@ public class Calendar {
         Color color = dateItem.getColor();
         LocalDate date = dateItem.getDate();
 
+        // If the cells is active, add active class
+        if (activeDate != null && activeDate.equals(date)) {
+            pane.getStyleClass().add("cal-item-active");
+        }
+
         pane.getProperties().put("date", date);
 
         if (color != null) {
