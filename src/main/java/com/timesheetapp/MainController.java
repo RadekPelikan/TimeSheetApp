@@ -21,6 +21,8 @@ public class MainController implements Initializable {
 
     private Calendar calendar;
 
+    private int counter = 1;
+
 
     @Override
     @FXML
@@ -46,5 +48,9 @@ public class MainController implements Initializable {
         calendar.move(0);
     }
 
+    public void onTest(ActionEvent actionEvent) {
+        calendar.addRecord(new TimeSheetRecord(LocalDate.now().plusDays(counter), "Today " + counter, Color.valueOf("#88cc77")));
+        counter++;
+    }
 }
 
