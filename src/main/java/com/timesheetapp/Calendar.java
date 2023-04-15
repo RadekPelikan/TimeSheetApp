@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class Calendar {
@@ -22,11 +23,18 @@ public class Calendar {
     @FXML
     private final Label monthLabel;
 
+    private final HashMap<String, TimeSheetRecord> data = new HashMap<>();
+
     private int moved = 0;
 
-    public Calendar(GridPane gridPane, Label monthLabel) {
+    public Calendar(GridPane gridPane, Label monthLabel, ArrayList<TimeSheetRecord> data) {
         this.gridPane = gridPane;
         this.monthLabel = monthLabel;
+
+        for(TimeSheetRecord record : data) {
+            this.data.put(record.getDate().toString(), record);
+        }
+
 
         LocalDate date = LocalDate.now();
 
@@ -50,6 +58,7 @@ public class Calendar {
     }
 
     private ArrayList<DateItem> createMonth(LocalDate date) {
+
         Month month = Month.of(date.getMonthValue());
         String monthName = month.getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
         int year = date.getYear();
@@ -61,18 +70,14 @@ public class Calendar {
         int daysInMonth = month.length(date.isLeapYear());
         ArrayList<DateItem> dateItems = new ArrayList<>();
         for (int i = firstDayOfMonth; i < firstDayOfMonth + daysInMonth; i++) {
-            if (i < 10) {
-                dateItems.add(new DateItem(i, "Test", Color.valueOf("#aaffaa")));
+            LocalDate newDate = date.withDayOfMonth(i - firstDayOfMonth + 1);
+
+            if (data.containsKey(newDate.toString())) {
+                TimeSheetRecord record = data.get(newDate.toString());
+                dateItems.add(new DateItem(i, record.getInfo(), record.getColor()));
                 continue;
             }
-            if (i < 20) {
-                dateItems.add(new DateItem(i, "Test 2"));
-                continue;
-            }
-            if (i < 23) {
-                dateItems.add(new DateItem(i, Color.valueOf("#ffffaa")));
-                continue;
-            }
+
             dateItems.add(new DateItem(i));
         }
         return dateItems;
