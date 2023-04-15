@@ -44,6 +44,16 @@ public class Calendar {
         populateCalendar(month);
     }
 
+    public Calendar(GridPane gridPane, Label monthLabel) {
+        this.gridPane = gridPane;
+        this.monthLabel = monthLabel;
+
+        LocalDate date = LocalDate.now();
+
+        ArrayList<DateItem> month = createMonth(date);
+        populateCalendar(month);
+    }
+
     /**
      * Add record to calendar and refreshes it
      *
@@ -244,6 +254,10 @@ public class Calendar {
 
     public LocalDate getActiveDate() {
         return activeDate;
+    }
+
+    public HashMap<String, TSEvent> getData() {
+        return data;
     }
 }
 

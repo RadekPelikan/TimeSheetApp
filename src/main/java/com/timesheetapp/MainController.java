@@ -2,16 +2,18 @@ package com.timesheetapp;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -20,11 +22,8 @@ public class MainController implements Initializable {
     public GridPane gridPane;
     @FXML
     public Label monthLabel;
-
-    private Calendar calendar;
-
-    private int counter = 1;
-
+    @FXML
+    public VBox sidePanel;
 
     @Override
     @FXML
@@ -33,42 +32,47 @@ public class MainController implements Initializable {
         // TODO: On click of a day cell, list all data points in right panel
         // TODO: On click of a day cell, add ability to create new data point
         // TODO: On click of a data point, add ability to edit or delete it
-        ArrayList<TSEvent> data = new ArrayList<>();
-        LocalDate date = LocalDate.now();
-        data.add(new TSEvent(date, "Today", Color.valueOf("#88cc77")));
-        calendar = new Calendar(gridPane, monthLabel, data);
+        new CalendarSingleton(new Calendar(gridPane, monthLabel));
+        new ViewHandlerSingleton(sidePanel);
+
+        CalendarSingleton.addRecord(new TSEvent(LocalDate.now(), "Today", Color.valueOf("#88cc77")));
+
+        ViewHandlerSingleton.showEvents();
     }
 
     @FXML
     public void onForward(ActionEvent actionEvent) {
-        calendar.move(1);
+        CalendarSingleton.move(1);
     }
 
     @FXML
     public void onBackward(ActionEvent actionEvent) {
-        calendar.move(-1);
+        CalendarSingleton.move(-1);
     }
 
     @FXML
     public void onToday(ActionEvent actionEvent) {
-        calendar.move(0);
-    }
-
-    public void onTest(ActionEvent actionEvent) {
-        calendar.addRecord(new TSEvent(LocalDate.now().plusDays(counter), "Today " + counter, Color.valueOf("#88cc77")));
-        counter++;
+        CalendarSingleton.move(0);
     }
 
     @FXML
     public void onCalendarClick(MouseEvent mouseEvent) {
         double firstRowHeight = gridPane.getRowConstraints().get(0).getPrefHeight();
         if (mouseEvent.getY() < firstRowHeight) {
+            ViewHandlerSingleton.showEvents();
             return;
         }
 
 
-        LocalDate date = calendar.getActiveDate();
-        System.out.println(date);
+        LocalDate date = CalendarSingleton.getActiveDate();
+        TSEvent item = CalendarSingleton.getItem(date);
+        if (item != null) {
+            System.out.println("Show events");
+            ViewHandlerSingleton.showEvents();
+        } else {
+            System.out.println("Show Create new");
+            ViewHandlerSingleton.showCreateNew();
+        }
     }
 }
 
