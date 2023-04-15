@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -26,11 +27,22 @@ public class MainController implements Initializable {
     private int moved = 0;
 
     @Override
+    @FXML
     public void initialize(URL url, ResourceBundle resourceBundle) {
         LocalDate date = LocalDate.now();
 
         ArrayList<DateItem> month = createMonth(date);
         populateCalendar(month);
+    }
+
+    @FXML
+    public void onForward(ActionEvent actionEvent) {
+        move(++moved);
+    }
+
+    @FXML
+    public void onBackward(ActionEvent actionEvent) {
+        move(--moved);
     }
 
     private ArrayList<DateItem> createMonth(LocalDate date) {
@@ -45,7 +57,11 @@ public class MainController implements Initializable {
         int daysInMonth = month.length(date.isLeapYear());
         ArrayList<DateItem> dateItems = new ArrayList<>();
         for (int i = firstDayOfMonth; i < firstDayOfMonth + daysInMonth; i++) {
-            dateItems.add(new DateItem(i, "ahoj"));
+            if (i < 10) {
+                dateItems.add(new DateItem(i, "Test", "#bbffbb"));
+                continue;
+            }
+            dateItems.add(new DateItem(i));
         }
         return dateItems;
     }
@@ -57,14 +73,6 @@ public class MainController implements Initializable {
         ArrayList<DateItem> month = createMonth(date);
         populateCalendar(month);
     }
-
-    public void onForward(ActionEvent actionEvent) {
-        move(++moved);
-    }
-    public void onBackward(ActionEvent actionEvent) {
-        move(--moved);
-    }
-
 
     private void populateCalendar(ArrayList<DateItem> dateItems) {
         // Clear all except first row
@@ -93,6 +101,11 @@ public class MainController implements Initializable {
 
             int day = dateItems.get(i - firstDay + 1).getDay() - firstDay + 1;
             String info = dateItems.get(i - firstDay + 1).getInfo();
+            String color = dateItems.get(i - firstDay + 1).getColor();
+
+            if (color != null) {
+                pane.setStyle(String.format("-fx-background-color: %s;", color));
+            }
 
             VBox vBox = new VBox();
             vBox.prefWidthProperty().bind(pane.widthProperty());
@@ -121,11 +134,22 @@ public class MainController implements Initializable {
 
 class DateItem {
     private final int day;
-    private final String info;
+    private String info;
+    private String color; // Hex Format
+
+    public DateItem(int day, String info, String color) {
+        this.day = day;
+        this.info = info;
+        this.color = color;
+    }
 
     public DateItem(int day, String info) {
         this.day = day;
         this.info = info;
+    }
+
+    public DateItem(int day) {
+        this.day = day;
     }
 
     public int getDay() {
@@ -134,5 +158,9 @@ class DateItem {
 
     public String getInfo() {
         return info;
+    }
+
+    public String getColor() {
+        return color;
     }
 }
