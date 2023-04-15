@@ -34,10 +34,9 @@ public class Calendar {
         this.gridPane = gridPane;
         this.monthLabel = monthLabel;
 
-        for(TSEvent record : data) {
+        for (TSEvent record : data) {
             this.data.put(record.getDate().toString(), record);
         }
-
 
         LocalDate date = LocalDate.now();
 
@@ -47,6 +46,7 @@ public class Calendar {
 
     /**
      * Add record to calendar and refreshes it
+     *
      * @param record Record to add
      */
     public void addRecord(TSEvent record) {
@@ -57,6 +57,7 @@ public class Calendar {
     /**
      * Move calendar by amount of months
      * If amount is 0, it will reset to current month
+     *
      * @param amount Amount of months to move
      */
     public void move(int amount) {
@@ -135,10 +136,13 @@ public class Calendar {
         int firstDay = dateItems.get(0).getDay();
         int lastDay = dateItems.get(dateItems.size() - 1).getDay();
 
+        boolean hasData = (i < firstDay - 1 || i > lastDay - 1);
+
         Pane pane = new Pane();
         pane.getStyleClass().add("cal-item");
 
         pane.getProperties().put("index", i);
+        pane.getProperties().put("hasData", hasData);
 
         // On click of on pane print out i
         pane.setOnMouseClicked(event ->
@@ -149,7 +153,7 @@ public class Calendar {
         GridPane.setVgrow(pane, javafx.scene.layout.Priority.ALWAYS);
         GridPane.setMargin(pane, new Insets(1));
 
-        if (i < firstDay - 1 || i > lastDay - 1) return pane;
+        if (hasData) return pane;
 
         // If it's not empty
         DateItem dateItem = dateItems.get(i - firstDay + 1);
@@ -198,26 +202,30 @@ public class Calendar {
         return pane;
     }
 
-    private Pane createCell(int x, int y, ArrayList<DateItem> dateItems)  {
+    private Pane createCell(int x, int y, ArrayList<DateItem> dateItems) {
         int i = (y - 1) * 7 + x;
         return createCell(i, dateItems);
     }
 
     private void handleCellClick(MouseEvent event) {
+        activeDate = null;
         // Remove all active classes
         gridPane.getChildren().forEach(node -> {
-            if (node instanceof Pane) {
-                Pane pane = (Pane) node;
+            if (node instanceof Pane pane) {
                 pane.getStyleClass().remove("cal-item-active");
             }
         });
 
         Pane pane = (Pane) event.getSource();
+        boolean hasData = (boolean) pane.getProperties().get("hasData");
+        if (hasData) return;
         pane.getStyleClass().add("cal-item-active");
 
-        LocalDate date = (LocalDate) pane.getProperties().get("date");
-        activeDate = date;
-        System.out.println(date);
+        activeDate = (LocalDate) pane.getProperties().get("date");
+    }
+
+    public LocalDate getActiveDate() {
+        return activeDate;
     }
 }
 
@@ -227,20 +235,20 @@ class DateItem {
     private String info;
     private Color color;
 
-    public DateItem(int day,LocalDate date, String info, Color color) {
+    public DateItem(int day, LocalDate date, String info, Color color) {
         this.day = day;
         this.date = date;
         this.info = info;
         this.color = color;
     }
 
-    public DateItem(int day,LocalDate date,  String info) {
+    public DateItem(int day, LocalDate date, String info) {
         this.day = day;
         this.date = date;
         this.info = info;
     }
 
-    public DateItem(int day,LocalDate date, Color color) {
+    public DateItem(int day, LocalDate date, Color color) {
         this.day = day;
         this.date = date;
         this.color = color;

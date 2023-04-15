@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
@@ -55,6 +56,12 @@ public class MainController implements Initializable {
     public void onTest(ActionEvent actionEvent) {
         calendar.addRecord(new TSEvent(LocalDate.now().plusDays(counter), "Today " + counter, Color.valueOf("#88cc77")));
         counter++;
+    }
+
+    @FXML
+    public void onCalendarClick(MouseEvent mouseEvent) {
+        LocalDate date = calendar.getActiveDate();
+        System.out.println(date);
     }
 }
 
