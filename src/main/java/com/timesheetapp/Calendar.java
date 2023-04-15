@@ -85,6 +85,24 @@ public class Calendar {
         populateCalendar(month);
     }
 
+    public void clearActiveDate() {
+        activeDate = null;
+        // Remove all active classes
+        gridPane.getChildren().forEach(node -> {
+            if (node instanceof Pane pane) {
+                pane.getStyleClass().remove("cal-item-active");
+            }
+        });
+    }
+
+    public LocalDate getActiveDate() {
+        return activeDate;
+    }
+
+    public HashMap<String, TSEvent> getData() {
+        return data;
+    }
+
     private ArrayList<DateItem> createMonth() {
         LocalDate date = LocalDate.now();
         date = date.plusMonths(moved);
@@ -221,11 +239,12 @@ public class Calendar {
     }
 
     private void handleCellClick(MouseEvent event) {
-
-
         Pane pane = (Pane) event.getSource();
         boolean hasData = (boolean) pane.getProperties().get("hasData");
-        if (!hasData) return;
+        if (!hasData) {
+            clearActiveDate();
+            return;
+        };
 
         LocalDate date = (LocalDate) pane.getProperties().get("date");
 
@@ -240,24 +259,6 @@ public class Calendar {
         pane.getStyleClass().add("cal-item-active");
 
         activeDate = date;
-    }
-
-    public void clearActiveDate() {
-        activeDate = null;
-        // Remove all active classes
-        gridPane.getChildren().forEach(node -> {
-            if (node instanceof Pane pane) {
-                pane.getStyleClass().remove("cal-item-active");
-            }
-        });
-    }
-
-    public LocalDate getActiveDate() {
-        return activeDate;
-    }
-
-    public HashMap<String, TSEvent> getData() {
-        return data;
     }
 }
 

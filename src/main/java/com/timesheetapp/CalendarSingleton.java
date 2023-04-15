@@ -1,6 +1,9 @@
 package com.timesheetapp;
 
+import javafx.scene.layout.Pane;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CalendarSingleton {
@@ -19,16 +22,20 @@ public class CalendarSingleton {
         CalendarSingleton.calendar = calendar;
     }
 
-    public static void move(int amount) {
-        calendar.move(amount);
-    }
-
     public static void addRecord(TSEvent record) {
         calendar.addRecord(record);
     }
 
+    public static void move(int amount) {
+        calendar.move(amount);
+    }
+
     public static void refresh() {
         calendar.refresh();
+    }
+
+    public static void clearActiveDate() {
+        calendar.clearActiveDate();
     }
 
     public static LocalDate getActiveDate() {

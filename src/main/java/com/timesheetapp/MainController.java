@@ -36,6 +36,7 @@ public class MainController implements Initializable {
         new ViewHandlerSingleton(sidePanel);
 
         CalendarSingleton.addRecord(new TSEvent(LocalDate.now(), "Today", Color.valueOf("#88cc77")));
+        CalendarSingleton.addRecord(new TSEvent(LocalDate.now().plusDays(1), "Tomorrow", Color.valueOf("#88cc77")));
 
         ViewHandlerSingleton.showEvents();
     }
@@ -57,20 +58,27 @@ public class MainController implements Initializable {
 
     @FXML
     public void onCalendarClick(MouseEvent mouseEvent) {
+
+        // If clicked on first row
         double firstRowHeight = gridPane.getRowConstraints().get(0).getPrefHeight();
         if (mouseEvent.getY() < firstRowHeight) {
+            CalendarSingleton.clearActiveDate();
             ViewHandlerSingleton.showEvents();
             return;
         }
 
-
+        // If there is no active date show events
         LocalDate date = CalendarSingleton.getActiveDate();
+        if (date == null) {
+            ViewHandlerSingleton.showEvents();
+            return;
+        }
+
+        // If clicked on a date with events, show events
         TSEvent item = CalendarSingleton.getItem(date);
         if (item != null) {
-            System.out.println("Show events");
             ViewHandlerSingleton.showEvents();
         } else {
-            System.out.println("Show Create new");
             ViewHandlerSingleton.showCreateNew();
         }
     }
