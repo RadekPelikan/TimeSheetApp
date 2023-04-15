@@ -1,7 +1,5 @@
 package com.timesheetapp;
 
-import javafx.scene.layout.Pane;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,11 +40,11 @@ public class CalendarSingleton {
         return calendar.getActiveDate();
     }
 
-    public static HashMap<String, TSEvent> getData() {
+    public static HashMap<String, Cell> getData() {
         return calendar.getData();
     }
 
-    public static TSEvent getItem(LocalDate date) {
-        return getData().get(date.toString());
+    public static ArrayList<DateItem> getItems(LocalDate date) {
+        return calendar.getCell(date).getDataEntries();
     }
 }

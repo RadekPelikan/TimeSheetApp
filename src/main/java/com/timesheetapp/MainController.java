@@ -2,18 +2,16 @@ package com.timesheetapp;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -36,7 +34,6 @@ public class MainController implements Initializable {
         new ViewHandlerSingleton(sidePanel);
 
         CalendarSingleton.addRecord(new TSEvent(LocalDate.now(), "Today", Color.valueOf("#88cc77")));
-        CalendarSingleton.addRecord(new TSEvent(LocalDate.now().plusDays(1), "Tomorrow", Color.valueOf("#88cc77")));
 
         ViewHandlerSingleton.showEvents();
     }
@@ -59,14 +56,6 @@ public class MainController implements Initializable {
     @FXML
     public void onCalendarClick(MouseEvent mouseEvent) {
 
-        // If clicked on first row
-        double firstRowHeight = gridPane.getRowConstraints().get(0).getPrefHeight();
-        if (mouseEvent.getY() < firstRowHeight) {
-            CalendarSingleton.clearActiveDate();
-            ViewHandlerSingleton.showEvents();
-            return;
-        }
-
         // If there is no active date show events
         LocalDate date = CalendarSingleton.getActiveDate();
         if (date == null) {
@@ -75,8 +64,8 @@ public class MainController implements Initializable {
         }
 
         // If clicked on a date with events, show events
-        TSEvent item = CalendarSingleton.getItem(date);
-        if (item != null) {
+        ArrayList<DateItem> item = CalendarSingleton.getItems(date);
+        if (item.size() > 0) {
             ViewHandlerSingleton.showEvents();
         } else {
             ViewHandlerSingleton.showCreateNew();

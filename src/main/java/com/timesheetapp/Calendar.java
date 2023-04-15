@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.input.MouseEvent;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class Calendar {
 
     private LocalDate activeDate;
 
-    private final HashMap<String, TSEvent> data = new HashMap<>();
+    private final HashMap<String, Cell> data = new HashMap<>();
 
     private int moved = 0;
 
@@ -35,12 +36,12 @@ public class Calendar {
         this.monthLabel = monthLabel;
 
         for (TSEvent record : data) {
-            this.data.put(record.getDate().toString(), record);
+            add(record);
         }
 
         LocalDate date = LocalDate.now();
 
-        ArrayList<DateItem> month = createMonth(date);
+        ArrayList<Cell> month = createMonth(date);
         populateCalendar(month);
     }
 
@@ -50,7 +51,7 @@ public class Calendar {
 
         LocalDate date = LocalDate.now();
 
-        ArrayList<DateItem> month = createMonth(date);
+        ArrayList<Cell> month = createMonth(date);
         populateCalendar(month);
     }
 
@@ -60,7 +61,7 @@ public class Calendar {
      * @param record Record to add
      */
     public void addRecord(TSEvent record) {
-        data.put(record.getDate().toString(), record);
+        add(record);
         refresh();
     }
 
@@ -81,7 +82,7 @@ public class Calendar {
      * Refresh calendar with current data
      */
     public void refresh() {
-        ArrayList<DateItem> month = createMonth();
+        ArrayList<Cell> month = createMonth();
         populateCalendar(month);
     }
 
@@ -95,21 +96,25 @@ public class Calendar {
         });
     }
 
+    public Cell getCell(LocalDate date) {
+        return data.get(date.toString());
+    }
+
     public LocalDate getActiveDate() {
         return activeDate;
     }
 
-    public HashMap<String, TSEvent> getData() {
+    public HashMap<String, Cell> getData() {
         return data;
     }
 
-    private ArrayList<DateItem> createMonth() {
+    private ArrayList<Cell> createMonth() {
         LocalDate date = LocalDate.now();
         date = date.plusMonths(moved);
         return createMonth(date);
     }
 
-    private ArrayList<DateItem> createMonth(LocalDate date) {
+    private ArrayList<Cell> createMonth(LocalDate date) {
 
         Month month = Month.of(date.getMonthValue());
         String monthName = month.getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
@@ -120,19 +125,20 @@ public class Calendar {
         int firstDayOfMonth = date.withDayOfMonth(1).getDayOfWeek().getValue();
 
         int daysInMonth = month.length(date.isLeapYear());
-        ArrayList<DateItem> dateItems = new ArrayList<>();
+        ArrayList<Cell> cells = new ArrayList<>();
         for (int i = firstDayOfMonth; i < firstDayOfMonth + daysInMonth; i++) {
             LocalDate newDate = date.withDayOfMonth(i - firstDayOfMonth + 1);
 
-            if (data.containsKey(newDate.toString())) {
-                TSEvent record = data.get(newDate.toString());
-                dateItems.add(new DateItem(i, record.getDate(), record.getInfo(), record.getColor()));
+            ArrayList<DateItem> dataDateItems = getCell(newDate).getDataEntries();
+            if (dataDateItems.size() > 0) {
+                Cell cell = new Cell(newDate, i);
+                cell.addAll(dataDateItems);
                 continue;
             }
 
-            dateItems.add(new DateItem(i, newDate));
+            cells.add(new Cell(newDate, i));
         }
-        return dateItems;
+        return cells;
     }
 
     private String colorToHex(Color color) {
@@ -143,7 +149,7 @@ public class Calendar {
         return String.format("-fx-background-color: %s;", colorToHex(color));
     }
 
-    private void populateCalendar(ArrayList<DateItem> dateItems) {
+    private void populateCalendar(ArrayList<Cell> cell) {
         // Clear all except first row
         gridPane.getChildren().removeIf(node -> {
             Integer rowIndex = GridPane.getRowIndex(node);
@@ -154,23 +160,24 @@ public class Calendar {
             int x = i % 7;
             int y = i / 7 + 1;
 
-            Pane pane = createCell(i, dateItems);
+            Pane pane = createCell(i, cell.get(i));
 
             gridPane.add(pane, x, y);
         }
     }
 
-    private Pane createCell(int i, ArrayList<DateItem> dateItems) {
+    private Pane createCell(int i, Cell cell) {
+        ArrayList<DateItem> dateItems = cell.getDataEntries();
         int firstDay = dateItems.get(0).getDay();
         int lastDay = dateItems.get(dateItems.size() - 1).getDay();
 
-        boolean hasData = (i < firstDay - 1 || i > lastDay - 1);
+        boolean hasData = i >= firstDay && i < lastDay;
 
         Pane pane = new Pane();
         pane.getStyleClass().add("cal-item");
 
         pane.getProperties().put("index", i);
-        pane.getProperties().put("hasData", !hasData);
+        pane.getProperties().put("hasData", hasData);
 
         // On click of on pane print out i
         pane.setOnMouseClicked(this::handleCellClick);
@@ -179,7 +186,7 @@ public class Calendar {
         GridPane.setVgrow(pane, javafx.scene.layout.Priority.ALWAYS);
         GridPane.setMargin(pane, new Insets(1));
 
-        if (hasData) return pane;
+        if (!hasData) return pane;
 
         // If it's not empty
         DateItem dateItem = dateItems.get(i - firstDay + 1);
@@ -188,6 +195,10 @@ public class Calendar {
         String info = dateItem.getInfo();
         Color color = dateItem.getColor();
         LocalDate date = dateItem.getDate();
+
+        if (info != null) {
+            System.out.println(day + " " + info);
+        }
 
         // If the cells is active, add active class
         if (activeDate != null && activeDate.equals(date)) {
@@ -233,9 +244,9 @@ public class Calendar {
         return pane;
     }
 
-    private Pane createCell(int x, int y, ArrayList<DateItem> dateItems) {
+    private Pane createCell(int x, int y, Cell cell) {
         int i = (y - 1) * 7 + x;
-        return createCell(i, dateItems);
+        return createCell(i, cell);
     }
 
     private void handleCellClick(MouseEvent event) {
@@ -244,7 +255,7 @@ public class Calendar {
         if (!hasData) {
             clearActiveDate();
             return;
-        };
+        }
 
         LocalDate date = (LocalDate) pane.getProperties().get("date");
 
@@ -260,51 +271,72 @@ public class Calendar {
 
         activeDate = date;
     }
+
+    private void add(TSEvent event) {
+
+        for (int i = 0; i < event.getDays(); i++) {
+            int day = event.getDay() + i;
+            LocalDate date = event.getDate().plusDays(i);
+            String info = event.getInfo();
+            Color color = event.getColor();
+
+            LocalTime timeFrom = event.getTimeFrom().toLocalTime();
+            LocalTime timeTo = event.getTimeTo().toLocalTime();
+            // TODO: When looping through days, set the middle days time from 00:00 to 23:59
+
+            DateItem dateItem = new DateItem(day, date, timeFrom, timeTo, info, color);
+            data.get(date.toString()).add(dateItem);
+        }
+    }
+
 }
 
-class DateItem {
-    private final int day;
-    private final LocalDate date;
-    private String info;
-    private Color color;
+class Cell {
+    private LocalDate date;
+    private int x;
+    private int y;
+    private int i;
+    private ArrayList<DateItem> dataEntries = new ArrayList<>();
 
-    public DateItem(int day, LocalDate date, String info, Color color) {
-        this.day = day;
-        this.date = date;
-        this.info = info;
-        this.color = color;
-    }
-
-    public DateItem(int day, LocalDate date, String info) {
-        this.day = day;
-        this.date = date;
-        this.info = info;
-    }
-
-    public DateItem(int day, LocalDate date, Color color) {
-        this.day = day;
-        this.date = date;
-        this.color = color;
-    }
-
-    public DateItem(int day, LocalDate date) {
-        this.day = day;
+    public Cell(LocalDate date, int i ) {
+        this.i = i;
+        this.x = i % 7;
+        this.y = i / 7 + 1;
         this.date = date;
     }
 
-    public int getDay() {
-        return day;
+    public Cell(LocalDate date, int x, int y ) {
+        this.x = x;
+        this.y = y;
+        this.i = (y - 1) * 7 + x;
+        this.date = date;
+    }
+
+    public void add(DateItem dateItem) {
+        dataEntries.add(dateItem);
+    }
+
+    public void addAll(ArrayList<DateItem> dateItems) {
+        dataEntries.addAll(dateItems);
     }
 
     public LocalDate getDate() {
         return date;
     }
 
-    public String getInfo() {
-        return info;
+    public int getX() {
+        return x;
     }
 
-    public Color getColor() {
-        return color;
+    public int getY() {
+        return y;
+    }
+
+    public int getI() {
+        return i;
+    }
+
+    public ArrayList<DateItem> getDataEntries() {
+        return dataEntries;
     }
 }
