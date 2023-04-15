@@ -8,9 +8,9 @@
     -fx-border-color: black;
 }
 
-.cal-item:hover {
-    -fx-background-color: rgba(0, 0, 0, 0.2);
-}
+/*.cal-item:hover {*/
+/*    -fx-background-color: rgba(0, 0, 0, 0.2);*/
+/*}*/
 
 .cal-item-occupied {
     -fx-background-color: rgba(0, 0, 0, 0.2);

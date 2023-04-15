@@ -13,6 +13,7 @@ public class StartApp extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(StartApp.class.getResource("main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("TimeSheetApp");
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
