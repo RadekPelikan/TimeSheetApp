@@ -14,7 +14,9 @@ import javafx.scene.paint.Color;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -37,23 +39,22 @@ public class MainController implements Initializable {
 
     @FXML
     public void onForward(ActionEvent actionEvent) {
-        move(++moved);
+        move(1);
     }
 
     @FXML
     public void onBackward(ActionEvent actionEvent) {
-        move(--moved);
+        move(-1);
     }
 
     @FXML
     public void onToday(ActionEvent actionEvent) {
-        moved = 0;
         move(0);
     }
 
     private ArrayList<DateItem> createMonth(LocalDate date) {
         Month month = Month.of(date.getMonthValue());
-        String monthName = month.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.ENGLISH);
+        String monthName = month.getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
         int year = date.getYear();
         monthLabel.setText(String.format("%s %d", monthName, year));
 
@@ -71,14 +72,25 @@ public class MainController implements Initializable {
                 dateItems.add(new DateItem(i, "Test 2"));
                 continue;
             }
+            if (i < 23) {
+                dateItems.add(new DateItem(i, Color.valueOf("#ffffaa")));
+                continue;
+            }
             dateItems.add(new DateItem(i));
         }
         return dateItems;
     }
 
+    /**
+     * Move calendar by amount of months
+     * If amount is 0, it will reset to current month
+     * @param amount Amount of months to move
+     */
     private void move(int amount) {
         LocalDate date = LocalDate.now();
-        date = date.plusMonths(moved + amount);
+        moved += amount;
+        if (amount == 0) moved = 0;
+        date = date.plusMonths(moved);
 
         ArrayList<DateItem> month = createMonth(date);
         populateCalendar(month);
@@ -157,8 +169,6 @@ public class MainController implements Initializable {
             gridPane.add(pane, x, y);
         }
     }
-
-
 }
 
 class DateItem {
