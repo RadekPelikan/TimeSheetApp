@@ -43,18 +43,38 @@ public class Calendar {
     }
 
     /**
+     * Add record to calendar and refreshes it
+     * @param record Record to add
+     */
+    public void addRecord(TimeSheetRecord record) {
+        data.put(record.getDate().toString(), record);
+        refresh();
+    }
+
+    /**
      * Move calendar by amount of months
      * If amount is 0, it will reset to current month
      * @param amount Amount of months to move
      */
     public void move(int amount) {
-        LocalDate date = LocalDate.now();
         moved += amount;
         if (amount == 0) moved = 0;
-        date = date.plusMonths(moved);
 
-        ArrayList<DateItem> month = createMonth(date);
+        refresh();
+    }
+
+    /**
+     * Refresh calendar with current data
+     */
+    public void refresh() {
+        ArrayList<DateItem> month = createMonth();
         populateCalendar(month);
+    }
+
+    private ArrayList<DateItem> createMonth() {
+        LocalDate date = LocalDate.now();
+        date = date.plusMonths(moved);
+        return createMonth(date);
     }
 
     private ArrayList<DateItem> createMonth(LocalDate date) {
