@@ -11,6 +11,11 @@
 .cal-item:hover {
     -fx-background-color: rgba(0, 0, 0, 0.2);
 }
+
+.cal-item-occupied {
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+}
+
 .cal-month {
     -fx-font-size: 20px;
     -fx-font-weight: bold;

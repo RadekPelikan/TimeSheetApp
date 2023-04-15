@@ -58,7 +58,11 @@ public class MainController implements Initializable {
         ArrayList<DateItem> dateItems = new ArrayList<>();
         for (int i = firstDayOfMonth; i < firstDayOfMonth + daysInMonth; i++) {
             if (i < 10) {
-                dateItems.add(new DateItem(i, "Test", "#bbffbb"));
+                dateItems.add(new DateItem(i, "Test", Color.valueOf("#aaffaa")));
+                continue;
+            }
+            if (i < 20) {
+                dateItems.add(new DateItem(i, "Test 2"));
                 continue;
             }
             dateItems.add(new DateItem(i));
@@ -72,6 +76,14 @@ public class MainController implements Initializable {
 
         ArrayList<DateItem> month = createMonth(date);
         populateCalendar(month);
+    }
+
+    private String colorToHex(Color color) {
+        return String.format("#%02X%02X%02X", (int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255));
+    }
+
+    private String colorToStyle(Color color) {
+        return String.format("-fx-background-color: %s;", colorToHex(color));
     }
 
     private void populateCalendar(ArrayList<DateItem> dateItems) {
@@ -101,10 +113,19 @@ public class MainController implements Initializable {
 
             int day = dateItems.get(i - firstDay + 1).getDay() - firstDay + 1;
             String info = dateItems.get(i - firstDay + 1).getInfo();
-            String color = dateItems.get(i - firstDay + 1).getColor();
+            Color color = dateItems.get(i - firstDay + 1).getColor();
 
             if (color != null) {
-                pane.setStyle(String.format("-fx-background-color: %s;", color));
+                pane.setStyle(colorToStyle(color));
+
+                // On hover darken color
+                pane.setOnMouseEntered(event -> {
+                    Color darkerColor = color.darker();
+                    pane.setStyle(String.format("-fx-background-color: %s;", colorToHex(darkerColor)));
+                });
+                pane.setOnMouseExited(event -> {
+                    pane.setStyle(colorToStyle(color));
+                });
             }
 
             VBox vBox = new VBox();
@@ -135,9 +156,9 @@ public class MainController implements Initializable {
 class DateItem {
     private final int day;
     private String info;
-    private String color; // Hex Format
+    private Color color; // Hex Format
 
-    public DateItem(int day, String info, String color) {
+    public DateItem(int day, String info, Color color) {
         this.day = day;
         this.info = info;
         this.color = color;
@@ -160,7 +181,7 @@ class DateItem {
         return info;
     }
 
-    public String getColor() {
+    public Color getColor() {
         return color;
     }
 }
