@@ -142,12 +142,10 @@ public class Calendar {
         pane.getStyleClass().add("cal-item");
 
         pane.getProperties().put("index", i);
-        pane.getProperties().put("hasData", hasData);
+        pane.getProperties().put("hasData", !hasData);
 
         // On click of on pane print out i
-        pane.setOnMouseClicked(event ->
-                handleCellClick(event)
-        );
+        pane.setOnMouseClicked(this::handleCellClick);
 
         GridPane.setHgrow(pane, javafx.scene.layout.Priority.ALWAYS);
         GridPane.setVgrow(pane, javafx.scene.layout.Priority.ALWAYS);
@@ -213,6 +211,28 @@ public class Calendar {
     }
 
     private void handleCellClick(MouseEvent event) {
+
+
+        Pane pane = (Pane) event.getSource();
+        boolean hasData = (boolean) pane.getProperties().get("hasData");
+        if (!hasData) return;
+
+        LocalDate date = (LocalDate) pane.getProperties().get("date");
+
+        // If clicked on the same cell twice, clear active date
+        if (activeDate != null && activeDate.equals(date)) {
+            clearActiveDate();
+            return;
+        }
+
+        clearActiveDate();
+
+        pane.getStyleClass().add("cal-item-active");
+
+        activeDate = date;
+    }
+
+    public void clearActiveDate() {
         activeDate = null;
         // Remove all active classes
         gridPane.getChildren().forEach(node -> {
@@ -220,13 +240,6 @@ public class Calendar {
                 pane.getStyleClass().remove("cal-item-active");
             }
         });
-
-        Pane pane = (Pane) event.getSource();
-        boolean hasData = (boolean) pane.getProperties().get("hasData");
-        if (hasData) return;
-        pane.getStyleClass().add("cal-item-active");
-
-        activeDate = (LocalDate) pane.getProperties().get("date");
     }
 
     public LocalDate getActiveDate() {

@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 import java.net.URL;
@@ -60,6 +61,12 @@ public class MainController implements Initializable {
 
     @FXML
     public void onCalendarClick(MouseEvent mouseEvent) {
+        double firstRowHeight = gridPane.getRowConstraints().get(0).getPrefHeight();
+        if (mouseEvent.getY() < firstRowHeight) {
+            return;
+        }
+
+
         LocalDate date = calendar.getActiveDate();
         System.out.println(date);
     }
