@@ -27,9 +27,13 @@ public class MainController implements Initializable {
     @Override
     @FXML
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        ArrayList<TimeSheetRecord> data = new ArrayList<>();
+        // TODO: Multiple data points per single day
+        // TODO: On click of a day cell, list all data points in right panel
+        // TODO: On click of a day cell, add ability to create new data point
+        // TODO: On click of a data point, add ability to edit or delete it
+        ArrayList<TSEvent> data = new ArrayList<>();
         LocalDate date = LocalDate.now();
-        data.add(new TimeSheetRecord(date, "Today", Color.valueOf("#88cc77")));
+        data.add(new TSEvent(date, "Today", Color.valueOf("#88cc77")));
         calendar = new Calendar(gridPane, monthLabel, data);
     }
 
@@ -49,7 +53,7 @@ public class MainController implements Initializable {
     }
 
     public void onTest(ActionEvent actionEvent) {
-        calendar.addRecord(new TimeSheetRecord(LocalDate.now().plusDays(counter), "Today " + counter, Color.valueOf("#88cc77")));
+        calendar.addRecord(new TSEvent(LocalDate.now().plusDays(counter), "Today " + counter, Color.valueOf("#88cc77")));
         counter++;
     }
 }

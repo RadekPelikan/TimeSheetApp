@@ -8,13 +8,15 @@
     -fx-border-color: black;
 }
 
-/*.cal-item:hover {*/
-/*    -fx-background-color: rgba(0, 0, 0, 0.2);*/
-/*}*/
-
-.cal-item-occupied {
+.cal-item:hover {
     -fx-background-color: rgba(0, 0, 0, 0.2);
 }
+
+.cal-item-active {
+    -fx-border-width: 3px;
+    -fx-border-color: #6666BB;
+}
+
 
 .cal-month {
     -fx-font-size: 20px;

@@ -8,6 +8,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.input.MouseEvent;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -23,15 +24,17 @@ public class Calendar {
     @FXML
     private final Label monthLabel;
 
-    private final HashMap<String, TimeSheetRecord> data = new HashMap<>();
+    private LocalDate activeDate;
+
+    private final HashMap<String, TSEvent> data = new HashMap<>();
 
     private int moved = 0;
 
-    public Calendar(GridPane gridPane, Label monthLabel, ArrayList<TimeSheetRecord> data) {
+    public Calendar(GridPane gridPane, Label monthLabel, ArrayList<TSEvent> data) {
         this.gridPane = gridPane;
         this.monthLabel = monthLabel;
 
-        for(TimeSheetRecord record : data) {
+        for(TSEvent record : data) {
             this.data.put(record.getDate().toString(), record);
         }
 
@@ -46,7 +49,7 @@ public class Calendar {
      * Add record to calendar and refreshes it
      * @param record Record to add
      */
-    public void addRecord(TimeSheetRecord record) {
+    public void addRecord(TSEvent record) {
         data.put(record.getDate().toString(), record);
         refresh();
     }
@@ -93,12 +96,12 @@ public class Calendar {
             LocalDate newDate = date.withDayOfMonth(i - firstDayOfMonth + 1);
 
             if (data.containsKey(newDate.toString())) {
-                TimeSheetRecord record = data.get(newDate.toString());
-                dateItems.add(new DateItem(i, record.getInfo(), record.getColor()));
+                TSEvent record = data.get(newDate.toString());
+                dateItems.add(new DateItem(i, record.getDate(), record.getInfo(), record.getColor()));
                 continue;
             }
 
-            dateItems.add(new DateItem(i));
+            dateItems.add(new DateItem(i, newDate));
         }
         return dateItems;
     }
@@ -118,93 +121,142 @@ public class Calendar {
             return rowIndex != null && rowIndex > 0;
         });
 
-        int firstDay = dateItems.get(0).getDay();
-        int lastDay = dateItems.get(dateItems.size() - 1).getDay();
         for (int i = 0; i < 7 * 6; i++) {
             int x = i % 7;
             int y = i / 7 + 1;
 
-            Pane pane = new Pane();
-            pane.getStyleClass().add("cal-item");
+            Pane pane = createCell(i, dateItems);
 
-            GridPane.setHgrow(pane, javafx.scene.layout.Priority.ALWAYS);
-            GridPane.setVgrow(pane, javafx.scene.layout.Priority.ALWAYS);
-            GridPane.setMargin(pane, new Insets(1));
-
-            if (i < firstDay - 1 || i > lastDay - 1) {
-                gridPane.add(pane, x, y);
-                continue;
-            }
-
-            int day = dateItems.get(i - firstDay + 1).getDay() - firstDay + 1;
-            String info = dateItems.get(i - firstDay + 1).getInfo();
-            Color color = dateItems.get(i - firstDay + 1).getColor();
-
-            if (color != null) {
-                pane.setStyle(colorToStyle(color));
-
-                // On hover darken color
-                pane.setOnMouseEntered(event -> {
-                    Color darkerColor = color.darker();
-                    pane.setStyle(String.format("-fx-background-color: %s;", colorToHex(darkerColor)));
-                });
-                pane.setOnMouseExited(event -> {
-                    pane.setStyle(colorToStyle(color));
-                });
-            }
-
-            VBox vBox = new VBox();
-            vBox.prefWidthProperty().bind(pane.widthProperty());
-            vBox.prefHeightProperty().bind(pane.heightProperty());
-
-            Label dayLabel = new Label(String.valueOf(day));
-            dayLabel.prefWidthProperty().bind(pane.widthProperty());
-            dayLabel.prefHeightProperty().bind(pane.heightProperty().divide(4));
-
-            dayLabel.setAlignment(Pos.CENTER);
-
-            Label infoLabel = new Label(info);
-            infoLabel.prefWidthProperty().bind(pane.widthProperty());
-            infoLabel.prefHeightProperty().bind(pane.heightProperty());
-            infoLabel.setAlignment(Pos.TOP_CENTER);
-
-            vBox.getChildren().add(dayLabel);
-            vBox.getChildren().add(infoLabel);
-
-
-            pane.getChildren().add(vBox);
             gridPane.add(pane, x, y);
         }
+    }
+
+    private Pane createCell(int i, ArrayList<DateItem> dateItems) {
+        int firstDay = dateItems.get(0).getDay();
+        int lastDay = dateItems.get(dateItems.size() - 1).getDay();
+
+        Pane pane = new Pane();
+        pane.getStyleClass().add("cal-item");
+
+        pane.getProperties().put("index", i);
+
+        // On click of on pane print out i
+        pane.setOnMouseClicked(event ->
+                handleCellClick(event)
+        );
+
+        GridPane.setHgrow(pane, javafx.scene.layout.Priority.ALWAYS);
+        GridPane.setVgrow(pane, javafx.scene.layout.Priority.ALWAYS);
+        GridPane.setMargin(pane, new Insets(1));
+
+        if (i < firstDay - 1 || i > lastDay - 1) return pane;
+
+        // If it's not empty
+        DateItem dateItem = dateItems.get(i - firstDay + 1);
+
+        int day = dateItem.getDay() - firstDay + 1;
+        String info = dateItem.getInfo();
+        Color color = dateItem.getColor();
+        LocalDate date = dateItem.getDate();
+
+        pane.getProperties().put("date", date);
+
+        if (color != null) {
+            pane.setStyle(colorToStyle(color));
+
+            // On hover darken color
+            pane.setOnMouseEntered(event -> {
+                Color darkerColor = color.darker();
+                pane.setStyle(String.format("-fx-background-color: %s;", colorToHex(darkerColor)));
+            });
+            pane.setOnMouseExited(event -> {
+                pane.setStyle(colorToStyle(color));
+            });
+        }
+
+        VBox vBox = new VBox();
+        vBox.prefWidthProperty().bind(pane.widthProperty());
+        vBox.prefHeightProperty().bind(pane.heightProperty());
+
+        Label dayLabel = new Label(String.valueOf(day));
+        dayLabel.prefWidthProperty().bind(pane.widthProperty());
+        dayLabel.prefHeightProperty().bind(pane.heightProperty().divide(4));
+
+        dayLabel.setAlignment(Pos.CENTER);
+
+        Label infoLabel = new Label(info);
+        infoLabel.prefWidthProperty().bind(pane.widthProperty());
+        infoLabel.prefHeightProperty().bind(pane.heightProperty());
+        infoLabel.setAlignment(Pos.TOP_CENTER);
+
+        vBox.getChildren().add(dayLabel);
+        vBox.getChildren().add(infoLabel);
+
+
+        pane.getChildren().add(vBox);
+
+        return pane;
+    }
+
+    private Pane createCell(int x, int y, ArrayList<DateItem> dateItems)  {
+        int i = (y - 1) * 7 + x;
+        return createCell(i, dateItems);
+    }
+
+    private void handleCellClick(MouseEvent event) {
+        // Remove all active classes
+        gridPane.getChildren().forEach(node -> {
+            if (node instanceof Pane) {
+                Pane pane = (Pane) node;
+                pane.getStyleClass().remove("cal-item-active");
+            }
+        });
+
+        Pane pane = (Pane) event.getSource();
+        pane.getStyleClass().add("cal-item-active");
+
+        LocalDate date = (LocalDate) pane.getProperties().get("date");
+        activeDate = date;
+        System.out.println(date);
     }
 }
 
 class DateItem {
     private final int day;
+    private final LocalDate date;
     private String info;
     private Color color;
 
-    public DateItem(int day, String info, Color color) {
+    public DateItem(int day,LocalDate date, String info, Color color) {
         this.day = day;
+        this.date = date;
         this.info = info;
         this.color = color;
     }
 
-    public DateItem(int day, String info) {
+    public DateItem(int day,LocalDate date,  String info) {
         this.day = day;
+        this.date = date;
         this.info = info;
     }
 
-    public DateItem(int day, Color color) {
+    public DateItem(int day,LocalDate date, Color color) {
         this.day = day;
+        this.date = date;
         this.color = color;
     }
 
-    public DateItem(int day) {
+    public DateItem(int day, LocalDate date) {
         this.day = day;
+        this.date = date;
     }
 
     public int getDay() {
         return day;
+    }
+
+    public LocalDate getDate() {
+        return date;
     }
 
     public String getInfo() {
