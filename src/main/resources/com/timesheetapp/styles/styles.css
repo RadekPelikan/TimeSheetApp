@@ -32,3 +32,11 @@
     -fx-background-color: rgba(0, 0, 0, 0.1);
     -fx-font-size: 25px;
 }
+
+.cal-today {
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+}
+
+.cal-today:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+}

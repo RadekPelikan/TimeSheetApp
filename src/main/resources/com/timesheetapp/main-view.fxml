@@ -8,7 +8,7 @@
    <children>
       <HBox prefHeight="400.0" prefWidth="600.0" spacing="40.0">
          <children>
-            <VBox prefHeight="345.0" prefWidth="407.0">
+            <VBox prefHeight="345.0" prefWidth="407.0" spacing="5.0">
                <children>
                   <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
@@ -17,9 +17,10 @@
                               <Button mnemonicParsing="false" onAction="#onBackward" prefHeight="118.0" prefWidth="142.0" styleClass="cal-backward" text="&lt;" />
                            </children>
                         </VBox>
-                        <VBox layoutX="38.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                        <VBox alignment="CENTER" layoutX="38.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                            <children>
                               <Label fx:id="monthLabel" alignment="CENTER" prefHeight="71.0" prefWidth="117.0" styleClass="cal-month" text="Label" VBox.vgrow="ALWAYS" />
+                              <Button mnemonicParsing="false" onAction="#onToday" prefHeight="25.0" prefWidth="78.0" styleClass="cal-today" text="Today" />
                            </children>
                         </VBox>
                         <VBox alignment="CENTER" layoutX="38.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">

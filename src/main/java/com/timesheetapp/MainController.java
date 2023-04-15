@@ -45,6 +45,12 @@ public class MainController implements Initializable {
         move(--moved);
     }
 
+    @FXML
+    public void onToday(ActionEvent actionEvent) {
+        moved = 0;
+        move(0);
+    }
+
     private ArrayList<DateItem> createMonth(LocalDate date) {
         Month month = Month.of(date.getMonthValue());
         String monthName = month.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.ENGLISH);
@@ -151,12 +157,14 @@ public class MainController implements Initializable {
             gridPane.add(pane, x, y);
         }
     }
+
+
 }
 
 class DateItem {
     private final int day;
     private String info;
-    private Color color; // Hex Format
+    private Color color;
 
     public DateItem(int day, String info, Color color) {
         this.day = day;
@@ -167,6 +175,11 @@ class DateItem {
     public DateItem(int day, String info) {
         this.day = day;
         this.info = info;
+    }
+
+    public DateItem(int day, Color color) {
+        this.day = day;
+        this.color = color;
     }
 
     public DateItem(int day) {
